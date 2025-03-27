@@ -16,8 +16,8 @@
 ## Category-zhTW: 地圖
 ## X-Website: https://github.com/cybertk/WeeklyDelveMaps
 ## X-Curse-Project-ID: 1229984
-## X-Wago-ID: 
-## X-WoWI-ID: 
+## X-Wago-ID: qKQx4D6x
+## X-WoWI-ID: 26917
 
 
 WeeklyDelveMaps.lua
