@@ -1,6 +1,6 @@
 ## Interface: 110100
 ## Title: WeeklyDelveMaps
-## Notes: Show your acquired Delver's Bounty map on tooltip of the Delve Entrances
+## Notes: Show your acquired |T1064187:14|t |cffa335ee[Delver's Bounty]|r on tooltip of the Delve Entrances
 ## Version: @project-version@
 ## IconTexture: Interface\AddOns\WeeklyDelveMaps\Icon.blp
 ## Category-enUS: Map
