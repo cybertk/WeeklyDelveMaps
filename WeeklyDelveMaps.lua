@@ -47,7 +47,6 @@ if _G["WeeklyDelveMaps"] == nil then
 			local name = item:GetItemName()
 			local icon = item:GetItemIcon()
 			local quality = item:GetItemQuality()
-			print(icon)
 
 			hooksecurefunc(DelveEntrancePinMixin, "OnMouseEnter", function(frame)
 				local progress = format(
