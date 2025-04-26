@@ -19,12 +19,20 @@ function Progress:Update()
 			table.remove(self.remaining, i)
 		end
 	end
+
+	self.count = C_Item.GetItemCount(self.DELVE_MAP_ITEM_ID, true)
 end
 
 function Progress:Summary()
-	local color = #self.remaining == 0 and GREEN_FONT_COLOR or WHITE_FONT_COLOR
+	local color = #self.remaining == 0 and "GREEN" or self.count > 0 and "RED" or "WHITE"
 
-	return color:WrapTextInColorCode(format("%d/%d", self.required - #self.remaining, self.required))
+	local s = format("|cn%s_FONT_COLOR:%d/%d|r", color, self.required - #self.remaining, self.required)
+
+	if self.count > 0 then
+		s = format("|cnLIGHTBLUE_FONT_COLOR:(%d) |r", self.count) .. s
+	end
+
+	return s
 end
 
 local WeeklyDelveMaps = {}
