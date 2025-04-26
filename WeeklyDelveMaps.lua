@@ -1,6 +1,86 @@
 local addonName, ns = ...
 
+local Progress = {
+	required = 1,
+	DELVE_MAP_ITEM_ID = 233071,
+}
+Progress.__index = Progress
+
+function Progress:Create()
+	local o = { remaining = { 86371 } }
+
+	setmetatable(o, Progress)
+	return o
+end
+
+function Progress:Update()
+	for i = #self.remaining, 1, -1 do
+		if C_QuestLog.IsQuestFlaggedCompleted(self.remaining[i]) then
+			table.remove(self.remaining, i)
+		end
+	end
+end
+
+function Progress:Summary()
+	local color = #self.remaining == 0 and GREEN_FONT_COLOR or WHITE_FONT_COLOR
+
+	return color:WrapTextInColorCode(format("%d/%d", self.required - #self.remaining, self.required))
+end
+
 local WeeklyDelveMaps = {}
+
+function WeeklyDelveMaps:Init()
+	self.progress = Progress:Create()
+
+	hooksecurefunc(DelveEntrancePinMixin, "OnMouseEnter", function(frame)
+		self:AddProgressToTooltip(GameTooltip, frame)
+
+		GameTooltip:Show()
+	end)
+end
+
+function WeeklyDelveMaps:UpdateProgressTitle()
+	local item = Item:CreateFromItemID(Progress.DELVE_MAP_ITEM_ID)
+
+	local updateTitle = function()
+		local name = item:GetItemName()
+		local icon = item:GetItemIcon()
+		local quality = item:GetItemQuality()
+
+		self.title = CURRENCY_THIS_WEEK:format(CreateSimpleTextureMarkup(icon, 15, 15) .. " " .. ITEM_QUALITY_COLORS[quality].color:WrapTextInColorCode(name))
+	end
+
+	if item:IsItemDataCached() then
+		updateTitle()
+	else
+		item:ContinueOnItemLoad(updateTitle)
+	end
+end
+
+function WeeklyDelveMaps:AddProgressToTooltip(tooltip, pin)
+	if self.title == nil then
+		self:UpdateProgressTitle()
+	end
+
+	local title = self.title or LFG_LIST_LOADING -- Loading...
+	local progress = format("%s: %s", title, self.progress:Summary())
+
+	if pin.description == DELVE_LABEL then
+		tooltip:AddLine(" ")
+		tooltip:AddLine(progress)
+	else
+		local numLines = tooltip:NumLines()
+		local line = _G["GameTooltipTextLeft" .. numLines]
+		for i = 3, numLines do
+			if _G["GameTooltipTextLeft" .. i]:GetText() ~= " " then
+				line = _G["GameTooltipTextLeft" .. i - 1]
+				break
+			end
+		end
+
+		line:SetText(progress .. "|n" .. " ")
+	end
+end
 
 if _G["WeeklyDelveMaps"] == nil then
 	_G["WeeklyDelveMaps"] = WeeklyDelveMaps
@@ -19,74 +99,15 @@ if _G["WeeklyDelveMaps"] == nil then
 		self.frame:RegisterEvent(name)
 	end
 
-	local DELVE_MAP_ITEM_ID = 233071
-
-	local Progress = {
-		required = 1,
-		remaining = { 86371 },
-	}
-
-	function Progress:Update()
-		for i = #self.remaining, 1, -1 do
-			if C_QuestLog.IsQuestFlaggedCompleted(self.remaining[i]) then
-				table.remove(self.remaining, i)
-			end
-		end
-	end
-
-	function Progress:Summary()
-		local color = #self.remaining == 0 and GREEN_FONT_COLOR or WHITE_FONT_COLOR
-
-		return color:WrapTextInColorCode(format("%d/%d", self.required - #self.remaining, self.required))
-	end
-
-	function Progress:Init()
-		local item = Item:CreateFromItemID(DELVE_MAP_ITEM_ID)
-
-		item:ContinueOnItemLoad(function()
-			local name = item:GetItemName()
-			local icon = item:GetItemIcon()
-			local quality = item:GetItemQuality()
-
-			hooksecurefunc(DelveEntrancePinMixin, "OnMouseEnter", function(frame)
-				local progress = format(
-					"%s: %s",
-					CURRENCY_THIS_WEEK:format(CreateSimpleTextureMarkup(icon, 15, 15) .. " " .. ITEM_QUALITY_COLORS[quality].color:WrapTextInColorCode(name)),
-					self:Summary()
-				)
-
-				if frame.description == DELVE_LABEL then
-					GameTooltip:AddLine(" ")
-					GameTooltip:AddLine(progress)
-				else
-					local numLines = GameTooltip:NumLines()
-					local line = _G["GameTooltipTextLeft" .. numLines]
-					for i = 3, numLines do
-						if _G["GameTooltipTextLeft" .. i]:GetText() ~= " " then
-							line = _G["GameTooltipTextLeft" .. i - 1]
-							break
-						end
-					end
-
-					line:SetText(progress .. "|n" .. " ")
-				end
-
-				GameTooltip:Show()
-			end)
-		end)
-	end
-
 	WeeklyDelveMaps:RegisterEvent("PLAYER_ENTERING_WORLD", function(event, isInitialLogin, isReloadingUi)
 		if isInitialLogin == false and isReloadingUi == false then
 			return
 		end
 
-		C_Timer.After(1, function()
-			Progress:Init()
-		end)
+		WeeklyDelveMaps:Init()
 	end)
 
 	WeeklyDelveMaps:RegisterEvent("QUEST_LOG_UPDATE", function()
-		Progress:Update()
+		WeeklyDelveMaps.progress:Update()
 	end)
 end
