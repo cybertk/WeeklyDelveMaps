@@ -3,6 +3,7 @@
 ## Notes: Show your acquired |T1064187:14|t |cffa335ee[Delver's Bounty]|r on tooltip of the Delve Entrances
 ## Version: @project-version@
 ## IconTexture: Interface\AddOns\WeeklyDelveMaps\Icon.blp
+## SavedVariables: WeeklyDelveMapsDB
 ## Category-enUS: Map
 ## Category-deDE: Karte
 ## Category-esES: Mapa
@@ -20,4 +21,8 @@
 ## X-WoWI-ID: 26917
 
 
+Util.lua
+CharacterStore.lua
+
+Character.lua
 WeeklyDelveMaps.lua
