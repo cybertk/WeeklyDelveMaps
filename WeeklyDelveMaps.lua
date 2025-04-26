@@ -3,6 +3,7 @@ local addonName, ns = ...
 local Progress = {
 	required = 1,
 	DELVE_MAP_ITEM_ID = 233071,
+	DELVE_MAP_SPELL_ID = 473218,
 }
 Progress.__index = Progress
 
@@ -21,12 +22,17 @@ function Progress:Update()
 	end
 
 	self.count = C_Item.GetItemCount(self.DELVE_MAP_ITEM_ID, true)
+	self.pending = C_UnitAuras.GetPlayerAuraBySpellID(self.DELVE_MAP_SPELL_ID) and true
 end
 
 function Progress:Summary()
 	local color = #self.remaining == 0 and "GREEN" or self.count > 0 and "RED" or "WHITE"
 
 	local s = format("|cn%s_FONT_COLOR:%d/%d|r", color, self.required - #self.remaining, self.required)
+
+	if self.pending then
+		s = "|cnYELLOW_FONT_COLOR:*|r" .. s
+	end
 
 	if self.count > 0 then
 		s = format("|cnLIGHTBLUE_FONT_COLOR:(%d) |r", self.count) .. s
