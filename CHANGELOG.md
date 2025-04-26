@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.1.0 - 2025-04-27
+
+### New Features
+
+- Upgraded TOC to 11.1.5
+- Added support of tracking all your characters' map status
+- Added active map buf tracking -  with a yellow * at the left of existing x/1 loot status
+- Added support of indicating whether character has a map in the bag - with a blue (1)
+
 ## v1.0.1 - 2025-03-28
 
 ### Fix
