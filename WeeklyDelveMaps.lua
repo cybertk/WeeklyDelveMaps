@@ -8,13 +8,15 @@ local WeeklyDelveMaps = {}
 
 function WeeklyDelveMaps:Init()
 	hooksecurefunc(DelveEntrancePinMixin, "OnMouseEnter", function(frame)
-		if IsControlKeyDown() then
-			self:AddWarbandProgressToTooltip(GameTooltip, frame.description ~= DELVE_LABEL)
-		elseif not IsModifierKeyDown() then
-			self:AddProgressToTooltip(GameTooltip, frame)
+		self:UpdateTooltip(GameTooltip, frame.description ~= DELVE_LABEL)
+	end)
+
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip, data)
+		if not self:IsValidMap(tooltip:GetPrimaryTooltipData().id) then
+			return
 		end
 
-		GameTooltip:Show()
+		self:UpdateTooltip(tooltip, false)
 	end)
 
 	CharacterStore:SetCharacterTemplate(ns.Character)
@@ -25,6 +27,25 @@ function WeeklyDelveMaps:Init()
 	self.characterStore:SetSortOrder("name")
 
 	self.character = self.characterStore:CurrentPlayer()
+end
+
+function WeeklyDelveMaps:UpdateTooltip(tooltip, appendEndLine)
+	if IsControlKeyDown() then
+		self:AddWarbandProgressToTooltip(tooltip, appendEndLine)
+	elseif not IsModifierKeyDown() then
+		self:AddProgressToTooltip(tooltip, appendEndLine)
+	end
+
+	tooltip:Show()
+end
+
+function WeeklyDelveMaps:IsValidMap(itemID)
+	local mapItems = {
+		[233071] = true, -- Delver's Bounty in bag
+		[235628] = true, -- Delver's Bounty with upgrade data
+	}
+
+	return mapItems[itemID] == true
 end
 
 function WeeklyDelveMaps:UpdateProgressTitle()
@@ -45,7 +66,7 @@ function WeeklyDelveMaps:UpdateProgressTitle()
 	end
 end
 
-function WeeklyDelveMaps:AddProgressToTooltip(tooltip, pin)
+function WeeklyDelveMaps:AddProgressToTooltip(tooltip, appendEndLine)
 	if self.title == nil then
 		self:UpdateProgressTitle()
 	end
@@ -53,7 +74,7 @@ function WeeklyDelveMaps:AddProgressToTooltip(tooltip, pin)
 	local title = self.title or LFG_LIST_LOADING -- Loading...
 	local progress = format("|cnNORMAL_FONT_COLOR:%s:|r %s", title, self.character.progress:Summary())
 
-	if pin.description == DELVE_LABEL then
+	if not appendEndLine then
 		tooltip:AddLine(" ")
 		tooltip:AddLine(progress)
 	else
@@ -70,7 +91,7 @@ function WeeklyDelveMaps:AddProgressToTooltip(tooltip, pin)
 	end
 
 	tooltip:AddLine("|n|cnGREEN_FONT_COLOR:<Press CTRL to show all characters>|r")
-	if pin.description ~= DELVE_LABEL then
+	if appendEndLine then
 		tooltip:AddLine(" ")
 	end
 end
