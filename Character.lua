@@ -27,6 +27,10 @@ function Progress:Update()
 	self.pending = C_UnitAuras.GetPlayerAuraBySpellID(self.DELVE_MAP_SPELL_ID) and true
 end
 
+function Progress:Reset()
+	self.remaining = { 86371 }
+end
+
 function Progress:Summary()
 	local color = #self.remaining == 0 and "GREEN" or self.count > 0 and "RED" or "WHITE"
 

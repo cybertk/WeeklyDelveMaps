@@ -29,6 +29,32 @@ function WeeklyDelveMaps:Init()
 	self.character = self.characterStore:CurrentPlayer()
 end
 
+function WeeklyDelveMaps:ResetProgress()
+	local resetTime = C_DateAndTime.GetWeeklyResetStartTime()
+	if resetTime == self.db.resetTime then
+		return
+	end
+
+	local filter = function(character)
+		return character.updatedAt and character.updatedAt < resetTime
+	end
+
+	-- TODO: Temp Migration
+	if self.db.resetTime == nil then
+		filter = function()
+			return true
+		end
+	end
+
+	self.characterStore:ForEach(function(character)
+		character.progress:Reset()
+	end, filter)
+
+	self.db.resetTime = resetTime
+
+	print(addonName .. ": Progress were reset")
+end
+
 function WeeklyDelveMaps:UpdateTooltip(tooltip, appendEndLine)
 	if IsControlKeyDown() then
 		self:AddWarbandProgressToTooltip(tooltip, appendEndLine)
@@ -155,6 +181,7 @@ if _G["WeeklyDelveMaps"] == nil then
 		end
 
 		WeeklyDelveMaps:Init()
+		WeeklyDelveMaps:ResetProgress()
 	end)
 
 	WeeklyDelveMaps:RegisterEvent("QUEST_LOG_UPDATE", function()
