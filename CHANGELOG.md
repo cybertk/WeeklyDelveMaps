@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.0 - 2025-05-07
+
+### New Features
+
+- Added progress reset support for offline characters
+- Added progress display in item tooltips on inventory and delve spell
+
 ## v1.1.0 - 2025-04-27
 
 ### New Features
