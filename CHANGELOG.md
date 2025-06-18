@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.0 - 2025-06-18
+
+- Upgraded TOC to 11.1.7
+
 ## v1.2.0 - 2025-05-07
 
 ### New Features

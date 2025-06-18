@@ -1,4 +1,4 @@
-## Interface: 110105
+## Interface: 110107
 ## Title: WeeklyDelveMaps
 ## Notes: Show your acquired |T1064187:14|t |cffa335ee[Delver's Bounty]|r on tooltip of the Delve Entrances
 ## Version: @project-version@
