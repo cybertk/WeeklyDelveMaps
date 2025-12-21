@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.0 - 2025-12-21
+
+- Upgraded TOC to 11.2.7
+- Fixed: Cannot track players who reached level 80 after the addon was installed
+
 ## v1.3.0 - 2025-06-18
 
 - Upgraded TOC to 11.1.7
