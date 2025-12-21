@@ -83,6 +83,7 @@ end
 
 function Character:Update()
 	self.progress:Update()
+	self.level = UnitLevel("player")
 	self.updatedAt = GetServerTime()
 end
 
