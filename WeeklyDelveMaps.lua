@@ -7,8 +7,8 @@ local Progress = ns.Progress
 local WeeklyDelveMaps = {}
 
 function WeeklyDelveMaps:Init()
-	hooksecurefunc(DelveEntrancePinMixin, "OnMouseEnter", function(frame)
-		self:UpdateTooltip(GameTooltip, frame.description ~= DELVE_LABEL)
+	hooksecurefunc(DelveEntrancePinMixin, "AddCustomTooltipData", function(frame, tooltip)
+		self:UpdateTooltip(tooltip, frame.poiInfo.atlasName == "delves-bountiful")
 	end)
 
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip, data)
@@ -16,7 +16,7 @@ function WeeklyDelveMaps:Init()
 			return
 		end
 
-		self:UpdateTooltip(tooltip, false)
+		self:UpdateTooltip(tooltip)
 	end)
 
 	CharacterStore:SetCharacterTemplate(ns.Character)
@@ -55,11 +55,11 @@ function WeeklyDelveMaps:ResetProgress()
 	print(addonName .. ": Progress were reset")
 end
 
-function WeeklyDelveMaps:UpdateTooltip(tooltip, appendEndLine)
+function WeeklyDelveMaps:UpdateTooltip(tooltip, isBountiful)
 	if IsControlKeyDown() then
-		self:AddWarbandProgressToTooltip(tooltip, appendEndLine)
+		self:AddWarbandProgressToTooltip(tooltip)
 	elseif not IsModifierKeyDown() then
-		self:AddProgressToTooltip(tooltip, appendEndLine)
+		self:AddProgressToTooltip(tooltip, isBountiful)
 	end
 
 	tooltip:Show()
@@ -82,7 +82,7 @@ function WeeklyDelveMaps:UpdateProgressTitle()
 		local icon = item:GetItemIcon()
 		local quality = item:GetItemQuality()
 
-		self.title = CURRENCY_THIS_WEEK:format(CreateSimpleTextureMarkup(icon, 15, 15) .. " " .. ITEM_QUALITY_COLORS[quality].color:WrapTextInColorCode(name))
+		self.title = CreateSimpleTextureMarkup(icon, 15, 15) .. " " .. ITEM_QUALITY_COLORS[quality].color:WrapTextInColorCode(name)
 	end
 
 	if item:IsItemDataCached() then
@@ -92,37 +92,21 @@ function WeeklyDelveMaps:UpdateProgressTitle()
 	end
 end
 
-function WeeklyDelveMaps:AddProgressToTooltip(tooltip, appendEndLine)
+function WeeklyDelveMaps:AddProgressToTooltip(tooltip, isBountiful)
 	if self.title == nil then
 		self:UpdateProgressTitle()
 	end
 
-	local title = self.title or LFG_LIST_LOADING -- Loading...
-	local progress = format("|cnNORMAL_FONT_COLOR:%s:|r %s", title, self.character.progress:Summary())
-
-	if not appendEndLine then
-		tooltip:AddLine(" ")
-		tooltip:AddLine(progress)
-	else
-		local numLines = tooltip:NumLines()
-		local line = _G["GameTooltipTextLeft" .. numLines]
-		for i = 3, numLines do
-			if _G["GameTooltipTextLeft" .. i]:GetText() ~= " " then
-				line = _G["GameTooltipTextLeft" .. i - 1]
-				break
-			end
-		end
-
-		line:SetText(progress)
+	local progress = format("|cnNORMAL_FONT_COLOR:%s:|r %s", self.title or LFG_LIST_LOADING, self.character.progress:Summary())
+	if not isBountiful then
+		progress = "|n" .. progress
 	end
 
-	tooltip:AddLine("|n|cnGREEN_FONT_COLOR:<Press CTRL to show all characters>|r")
-	if appendEndLine then
-		tooltip:AddLine(" ")
-	end
+	tooltip:AddLine(progress)
+	tooltip:AddLine("|n|cnGREEN_FONT_COLOR:Press CTRL to show all characters|r" .. (isBountiful and "|n" or ""))
 end
 
-function WeeklyDelveMaps:AddWarbandProgressToTooltip(tooltip, appendEndLine)
+function WeeklyDelveMaps:AddWarbandProgressToTooltip(tooltip)
 	if self.title == nil then
 		tooltip:AddLine(LFG_LIST_LOADING)
 		return
@@ -139,10 +123,6 @@ function WeeklyDelveMaps:AddWarbandProgressToTooltip(tooltip, appendEndLine)
 	end, function(character)
 		return character.level == 80
 	end)
-
-	if appendEndLine then
-		tooltip:AddLine(" ")
-	end
 end
 
 if _G["WeeklyDelveMaps"] == nil then
