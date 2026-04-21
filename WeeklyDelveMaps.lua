@@ -104,7 +104,7 @@ function WeeklyDelveMaps:AddProgressToTooltip(tooltip, isBountiful)
 	end
 
 	tooltip:AddLine(progress)
-	tooltip:AddLine("|n|cnGREEN_FONT_COLOR:Press CTRL to show all characters|r" .. (isBountiful and "|n" or ""))
+	tooltip:AddLine("|n|cnGREEN_FONT_COLOR:Press CTRL to show all characters|r" .. (isBountiful and "|n|n" or ""))
 end
 
 function WeeklyDelveMaps:AddWarbandProgressToTooltip(tooltip)
