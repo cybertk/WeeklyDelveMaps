@@ -3,6 +3,7 @@ local addonName, ns = ...
 local Util = ns.Util
 local CharacterStore = ns.CharacterStore
 local Progress = ns.Progress
+local maxCharLvl = GetMaxLevelForPlayerExpansion()
 
 local WeeklyDelveMaps = {}
 
@@ -121,7 +122,7 @@ function WeeklyDelveMaps:AddWarbandProgressToTooltip(tooltip)
 			character.progress:Summary()
 		)
 	end, function(character)
-		return character.level == 80
+		return character.level == maxCharLvl
 	end)
 end
 
