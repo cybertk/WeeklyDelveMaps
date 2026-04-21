@@ -4,8 +4,8 @@ local Util = ns.Util
 
 local Progress = {
 	required = 1,
-	DELVE_MAP_ITEM_ID = 235628,
-	DELVE_MAP_SPELL_ID = 1246363,
+	DELVE_MAP_ITEM_ID = 265714,
+	DELVE_MAP_SPELL_ID = 1254631,
 }
 Progress.__index = Progress
 
